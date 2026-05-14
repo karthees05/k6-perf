@@ -292,15 +292,44 @@ Useful metrics to review:
 
 The workflow at `.github/workflows/k6-performance.yml` runs on pushes to `main`, pull requests, and manual dispatch.
 
-Manual workflow inputs:
+### Manual Workflow Inputs
+
+**Basic Parameters**
 
 - `environment`: `dev`, `qa`, or `prod`
 - `load_profile`: `fixed`, `ramp-up`, `spike`, or `peak`
-- `users`: virtual users
+- `users`: virtual users (for simple tests)
 - `duration_seconds`: test duration
 - `base_url`: optional target URL override
 
-The workflow installs dependencies with `npm ci`, builds the TypeScript suite with `npm run build`, installs K6 using `grafana/setup-k6-action@v1`, runs the bundled simulation with `grafana/run-k6-action@v1`, and uploads `k6-summary.html` plus `k6-summary.json` as the `k6-reports` artifact.
+**Ramp-up Profile Parameters**
+
+- `ramp_up_initial_users`: starting virtual users (default: 1)
+- `ramp_up_target_users`: peak virtual users (default: 10)
+- `ramp_up_base_duration_seconds`: initial base duration (default: 60)
+- `ramp_up_ramp_duration_seconds`: ramp up phase duration (default: 60)
+- `ramp_up_hold_duration_seconds`: hold at peak duration (default: 60)
+
+**Spike Profile Parameters**
+
+- `spike_base_users`: base virtual users (default: 1)
+- `spike_peak_users`: peak during spike (default: 10)
+- `spike_base_before_seconds`: base duration before spike (default: 60)
+- `spike_ramp_up_seconds`: ramp to peak duration (default: 30)
+- `spike_ramp_down_seconds`: ramp from peak duration (default: 30)
+- `spike_base_after_seconds`: base duration after spike (default: 60)
+
+**Peak Profile Parameters**
+
+- `peak_base_users`: base virtual users (default: 2)
+- `peak_peak_users`: peak virtual users (default: 10)
+- `peak_base_before_seconds`: base duration before ramp (default: 60)
+- `peak_ramp_up_seconds`: ramp up phase duration (default: 60)
+- `peak_peak_hold_seconds`: hold at peak duration (default: 60)
+- `peak_ramp_down_seconds`: ramp down phase duration (default: 60)
+- `peak_base_after_seconds`: base duration after ramp (default: 60)
+
+The workflow installs dependencies with `npm ci`, builds the TypeScript suite with `npm run build`, installs K6 using `grafana/setup-k6-action@v1`, runs the bundled simulation with `grafana/run-k6-action@v1`, and uploads `k6-summary.html`, `k6-summary.json`, and `k6-profile-graph.html` as the `k6-reports` artifact.
 
 ## Notes
 

@@ -39,6 +39,84 @@ on:
         required: false
         default: ""
 
+      # Ramp-up profile parameters
+      ramp_up_initial_users:
+        description: "[Ramp-up] Initial virtual users"
+        required: false
+        default: "1"
+      ramp_up_target_users:
+        description: "[Ramp-up] Target virtual users after ramp"
+        required: false
+        default: "10"
+      ramp_up_base_duration_seconds:
+        description: "[Ramp-up] Initial base duration (seconds)"
+        required: false
+        default: "60"
+      ramp_up_ramp_duration_seconds:
+        description: "[Ramp-up] Ramp duration (seconds)"
+        required: false
+        default: "60"
+      ramp_up_hold_duration_seconds:
+        description: "[Ramp-up] Hold at peak duration (seconds)"
+        required: false
+        default: "60"
+
+      # Spike profile parameters
+      spike_base_users:
+        description: "[Spike] Base virtual users"
+        required: false
+        default: "1"
+      spike_peak_users:
+        description: "[Spike] Peak virtual users at spike"
+        required: false
+        default: "10"
+      spike_base_before_seconds:
+        description: "[Spike] Base duration before spike (seconds)"
+        required: false
+        default: "60"
+      spike_ramp_up_seconds:
+        description: "[Spike] Ramp up duration (seconds)"
+        required: false
+        default: "30"
+      spike_ramp_down_seconds:
+        description: "[Spike] Ramp down duration (seconds)"
+        required: false
+        default: "30"
+      spike_base_after_seconds:
+        description: "[Spike] Base duration after spike (seconds)"
+        required: false
+        default: "60"
+
+      # Peak profile parameters
+      peak_base_users:
+        description: "[Peak] Base virtual users"
+        required: false
+        default: "2"
+      peak_peak_users:
+        description: "[Peak] Peak virtual users"
+        required: false
+        default: "10"
+      peak_base_before_seconds:
+        description: "[Peak] Base duration before ramp (seconds)"
+        required: false
+        default: "60"
+      peak_ramp_up_seconds:
+        description: "[Peak] Ramp up duration (seconds)"
+        required: false
+        default: "60"
+      peak_peak_hold_seconds:
+        description: "[Peak] Peak hold duration (seconds)"
+        required: false
+        default: "60"
+      peak_ramp_down_seconds:
+        description: "[Peak] Ramp down duration (seconds)"
+        required: false
+        default: "60"
+      peak_base_after_seconds:
+        description: "[Peak] Base duration after ramp (seconds)"
+        required: false
+        default: "60"
+
 jobs:
   performance:
     runs-on: ubuntu-latest
@@ -70,6 +148,24 @@ jobs:
             -e LOAD_PROFILE=${{ github.event.inputs.load_profile || 'fixed' }}
             -e USERS=${{ github.event.inputs.users || '5' }}
             -e DURATION_SECONDS=${{ github.event.inputs.duration_seconds || '60' }}
+            -e RAMP_UP_INITIAL_USERS=${{ github.event.inputs.ramp_up_initial_users || '1' }}
+            -e RAMP_UP_TARGET_USERS=${{ github.event.inputs.ramp_up_target_users || '10' }}
+            -e RAMP_UP_BASE_DURATION_SECONDS=${{ github.event.inputs.ramp_up_base_duration_seconds || '60' }}
+            -e RAMP_UP_RAMP_DURATION_SECONDS=${{ github.event.inputs.ramp_up_ramp_duration_seconds || '60' }}
+            -e RAMP_UP_HOLD_DURATION_SECONDS=${{ github.event.inputs.ramp_up_hold_duration_seconds || '60' }}
+            -e SPIKE_BASE_USERS=${{ github.event.inputs.spike_base_users || '1' }}
+            -e SPIKE_PEAK_USERS=${{ github.event.inputs.spike_peak_users || '10' }}
+            -e SPIKE_BASE_BEFORE_SECONDS=${{ github.event.inputs.spike_base_before_seconds || '60' }}
+            -e SPIKE_RAMP_UP_SECONDS=${{ github.event.inputs.spike_ramp_up_seconds || '30' }}
+            -e SPIKE_RAMP_DOWN_SECONDS=${{ github.event.inputs.spike_ramp_down_seconds || '30' }}
+            -e SPIKE_BASE_AFTER_SECONDS=${{ github.event.inputs.spike_base_after_seconds || '60' }}
+            -e PEAK_BASE_USERS=${{ github.event.inputs.peak_base_users || '2' }}
+            -e PEAK_PEAK_USERS=${{ github.event.inputs.peak_peak_users || '10' }}
+            -e PEAK_BASE_BEFORE_SECONDS=${{ github.event.inputs.peak_base_before_seconds || '60' }}
+            -e PEAK_RAMP_UP_SECONDS=${{ github.event.inputs.peak_ramp_up_seconds || '60' }}
+            -e PEAK_PEAK_HOLD_SECONDS=${{ github.event.inputs.peak_peak_hold_seconds || '60' }}
+            -e PEAK_RAMP_DOWN_SECONDS=${{ github.event.inputs.peak_ramp_down_seconds || '60' }}
+            -e PEAK_BASE_AFTER_SECONDS=${{ github.event.inputs.peak_base_after_seconds || '60' }}
             -e BASE_URL=${{ github.event.inputs.base_url || '' }}
 
       - name: Upload k6 reports
