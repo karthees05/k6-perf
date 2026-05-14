@@ -1,0 +1,4 @@
+node_modules/
+dist/
+k6-summary.html
+k6-summary.json

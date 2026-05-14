@@ -1,0 +1,82 @@
+name: k6-performance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - qa
+          - prod
+      load_profile:
+        description: "Load profile"
+        required: true
+        default: "fixed"
+        type: choice
+        options:
+          - fixed
+          - ramp-up
+          - spike
+          - peak
+      users:
+        description: "Virtual users"
+        required: true
+        default: "5"
+      duration_seconds:
+        description: "Duration in seconds"
+        required: true
+        default: "60"
+      base_url:
+        description: "Optional BASE_URL override"
+        required: false
+        default: ""
+
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Install k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Run k6 simulation
+        uses: grafana/run-k6-action@v1
+        with:
+          path: dist/simulations/todoMvcSimulation.js
+          flags: >-
+            -e ENV=${{ github.event.inputs.environment || 'dev' }}
+            -e LOAD_PROFILE=${{ github.event.inputs.load_profile || 'fixed' }}
+            -e USERS=${{ github.event.inputs.users || '5' }}
+            -e DURATION_SECONDS=${{ github.event.inputs.duration_seconds || '60' }}
+            -e BASE_URL=${{ github.event.inputs.base_url || '' }}
+
+      - name: Upload k6 reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-reports
+          path: |
+            k6-summary.html
+            k6-summary.json
+            k6-profile-graph.html
