@@ -12,9 +12,11 @@ import {
   toggleTodoCompletion
 } from "../journeys/uiJourneys.js";
 
+// Runtime and profile plan are resolved once per process and reused.
 const runtime = getRuntimeConfig();
 const profilePlan = buildProfilePlan(runtime);
 
+// Main k6 options used to control scenario execution and thresholds.
 export const options: Options = {
   ...buildOptionsFromPlan(profilePlan),
   thresholds: {
@@ -23,6 +25,7 @@ export const options: Options = {
   }
 };
 
+/** Executes the complete TodoMVC journey for one virtual user iteration. */
 export async function runTodoMvcJourney(): Promise<void> {
   const page = await browser.newPage();
 
@@ -37,10 +40,12 @@ export async function runTodoMvcJourney(): Promise<void> {
   }
 }
 
+/** Default k6 entrypoint delegates to the named journey function. */
 export default async function defaultScenario(): Promise<void> {
   await runTodoMvcJourney();
 }
 
+/** Writes console, JSON, HTML summary, and profile graph artifacts after each run. */
 export function handleSummary(data: Record<string, unknown>) {
   return {
     stdout: textSummary(data, { indent: " ", enableColors: true }),

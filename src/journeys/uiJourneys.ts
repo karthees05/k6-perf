@@ -1,6 +1,7 @@
 import { check } from "k6";
 import type { Page } from "k6/browser";
 
+// Central selectors for the TodoMVC journey.
 const selectors = {
   appRoot: ".todoapp",
   title: ".header h1",
@@ -10,6 +11,7 @@ const selectors = {
   clearCompleted: ".clear-completed"
 };
 
+/** Opens the app and validates that the shell loads correctly. */
 export async function openApplication(page: Page, baseUrl: string): Promise<void> {
   await page.goto(baseUrl, { waitUntil: "networkidle" });
   await page.waitForSelector(selectors.appRoot);
@@ -20,6 +22,7 @@ export async function openApplication(page: Page, baseUrl: string): Promise<void
   });
 }
 
+/** Creates a list of todos and validates that they appear in the UI. */
 export async function createTodos(page: Page, todos: string[]): Promise<void> {
   for (const todo of todos) {
     const input = page.locator(selectors.input);
@@ -33,6 +36,7 @@ export async function createTodos(page: Page, todos: string[]): Promise<void> {
   });
 }
 
+/** Toggles the first todo complete/incomplete to validate state transitions. */
 export async function toggleTodoCompletion(page: Page): Promise<void> {
   const firstCheckbox = page.locator(`${selectors.todoItems}:nth-child(1) .toggle`);
   await firstCheckbox.click();
@@ -49,6 +53,7 @@ export async function toggleTodoCompletion(page: Page): Promise<void> {
   });
 }
 
+/** Edits the second todo item inline and confirms updated text is rendered. */
 export async function editSecondTodo(page: Page, updatedText: string): Promise<void> {
   const secondTodoLabel = page.locator(`${selectors.todoItems}:nth-child(2) label`);
   await secondTodoLabel.dblclick();
@@ -63,6 +68,10 @@ export async function editSecondTodo(page: Page, updatedText: string): Promise<v
   });
 }
 
+/**
+ * Applies Active and Completed filters, then clears completed items
+ * and verifies the completed set is empty afterward.
+ */
 export async function filterAndClearCompleted(page: Page): Promise<void> {
   const firstCheckbox = page.locator(`${selectors.todoItems}:nth-child(1) .toggle`);
   await firstCheckbox.click();

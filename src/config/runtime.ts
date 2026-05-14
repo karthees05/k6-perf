@@ -28,6 +28,7 @@ export interface RuntimeConfig {
   peakBaseAfterSeconds: number;
 }
 
+/** Validates ENV and narrows it to a supported environment key. */
 function parseEnvironment(value: string | undefined): EnvironmentName {
   const env = (value ?? "dev") as EnvironmentName;
   if (env === "dev" || env === "qa" || env === "prod") {
@@ -36,6 +37,7 @@ function parseEnvironment(value: string | undefined): EnvironmentName {
   throw new Error(`Unsupported ENV value: ${value}`);
 }
 
+/** Validates LOAD_PROFILE and narrows it to a supported profile type. */
 function parseLoadProfile(value: string | undefined): LoadProfile {
   const profile = (value ?? "fixed") as LoadProfile;
   if (profile === "fixed" || profile === "ramp-up" || profile === "spike" || profile === "peak") {
@@ -44,6 +46,7 @@ function parseLoadProfile(value: string | undefined): LoadProfile {
   throw new Error(`Unsupported LOAD_PROFILE value: ${value}`);
 }
 
+/** Parses a positive integer from environment input with a fallback default. */
 function parsePositiveInteger(value: string | undefined, fallback: number, key: string): number {
   const numeric = value ? Number(value) : fallback;
   if (!Number.isFinite(numeric) || numeric <= 0 || !Number.isInteger(numeric)) {
@@ -52,6 +55,10 @@ function parsePositiveInteger(value: string | undefined, fallback: number, key: 
   return numeric;
 }
 
+/**
+ * Builds a fully validated runtime configuration from k6 environment variables.
+ * This is the single source of truth for profile parameters used by simulation code.
+ */
 export function getRuntimeConfig(): RuntimeConfig {
   const environment = parseEnvironment(__ENV.ENV);
   const loadProfile = parseLoadProfile(__ENV.LOAD_PROFILE);

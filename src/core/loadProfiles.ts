@@ -14,10 +14,12 @@ export interface ProfilePlan {
   totalDurationSeconds: number;
 }
 
+/** Converts a numeric second value into k6 duration syntax (for example, 30s). */
 function toDuration(seconds: number): string {
   return `${seconds}s`;
 }
 
+/** Formats duration text used in human-readable profile descriptions. */
 function formatSeconds(seconds: number): string {
   const minutes = Math.floor(seconds / 60);
   const remainder = seconds % 60;
@@ -30,10 +32,15 @@ function formatSeconds(seconds: number): string {
   return `${minutes}:${String(remainder).padStart(2, "0")} minutes`;
 }
 
+/** Sums all stage durations to calculate total scenario duration. */
 function totalDuration(stages: ProfileStage[]): number {
   return stages.reduce((sum, stage) => sum + stage.durationSeconds, 0);
 }
 
+/**
+ * Creates an abstract load plan from runtime config.
+ * The same plan powers both k6 execution options and graph rendering.
+ */
 export function buildProfilePlan(config: RuntimeConfig): ProfilePlan {
   if (config.loadProfile === "fixed") {
     return {
@@ -102,6 +109,7 @@ export function buildProfilePlan(config: RuntimeConfig): ProfilePlan {
   };
 }
 
+/** Converts a profile plan into k6 `options.scenarios` configuration. */
 export function buildOptionsFromPlan(plan: ProfilePlan): Options {
   const browserOptions = {
     options: {
@@ -138,6 +146,7 @@ export function buildOptionsFromPlan(plan: ProfilePlan): Options {
   };
 }
 
+/** Escapes dynamic text inserted into generated HTML content. */
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -147,6 +156,10 @@ function escapeHtml(text: string): string {
     .replace(/'/g, "&#039;");
 }
 
+/**
+ * Generates a standalone HTML report describing and plotting users over time
+ * for the selected profile plan.
+ */
 export function buildProfileGraphHtml(plan: ProfilePlan): string {
   const points: Array<{ time: number; vus: number }> = [{ time: 0, vus: plan.startVUs }];
   let elapsed = 0;
