@@ -14,23 +14,43 @@
     th { background: #f1f5f9; }
     .axis { stroke: #94a3b8; stroke-width: 1; }
     .line { fill: none; stroke: #0284c7; stroke-width: 3; }
+    .point { cursor: pointer; }
+    .tooltip {
+      position: absolute;
+      z-index: 10;
+      pointer-events: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.95);
+      color: white;
+      font-size: 13px;
+      line-height: 1.4;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.2);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      transform: translate(-50%, -120%);
+      white-space: nowrap;
+    }
+    .tooltip.visible { opacity: 1; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>k6 Profile Graph: fixed</h1>
-    <p>Fixed: 1 virtual users run for 10 seconds, each executing all requests sequentially.</p>
-    <p>Total duration: 10s | Start users: 1 | Peak users: 1</p>
+    <h1>k6 Profile Graph: spike</h1>
+    <p>Spike: 1 virtual users run for 15 seconds, spikes to 10 over 15 seconds, drops to 1 over 15 seconds, maintains 1 for 15 seconds, each executing all requests sequentially.</p>
+    <p>Total duration: 60s | Start users: 1 | Peak users: 10</p>
   </div>
 
-  <div class="card">
+  <div class="card" style="position: relative;">
     <svg viewBox="0 0 980 420" width="100%" role="img" aria-label="Load profile graph">
       <line class="axis" x1="70" y1="30" x2="70" y2="370" />
       <line class="axis" x1="70" y1="370" x2="950" y2="370" />
-      <path class="line" d="M70.00,30.00 L950.00,30.00" />
+      <path class="line" d="M70.00,336.00 L290.00,336.00 L510.00,30.00 L730.00,336.00 L950.00,336.00" />
+      <circle class="point" cx="70.00" cy="336.00" r="6" fill="#0284c7" stroke="#fff" stroke-width="2" data-time="0" data-vus="1" data-stage="1" /><circle class="point" cx="290.00" cy="336.00" r="6" fill="#0284c7" stroke="#fff" stroke-width="2" data-time="15" data-vus="1" data-stage="2" /><circle class="point" cx="510.00" cy="30.00" r="6" fill="#0284c7" stroke="#fff" stroke-width="2" data-time="30" data-vus="10" data-stage="3" /><circle class="point" cx="730.00" cy="336.00" r="6" fill="#0284c7" stroke="#fff" stroke-width="2" data-time="45" data-vus="1" data-stage="4" /><circle class="point" cx="950.00" cy="336.00" r="6" fill="#0284c7" stroke="#fff" stroke-width="2" data-time="60" data-vus="1" data-stage="5" />
       <text x="70" y="22" font-size="12" fill="#475569">Virtual users</text>
       <text x="880" y="408" font-size="12" fill="#475569">Time (seconds)</text>
     </svg>
+    <div class="tooltip" id="tooltip"></div>
   </div>
 
   <div class="card">
@@ -39,8 +59,29 @@
       <thead>
         <tr><th>Stage</th><th>Duration</th><th>Target users</th></tr>
       </thead>
-      <tbody><tr><td>1</td><td>10s</td><td>1</td></tr></tbody>
+      <tbody><tr><td>1</td><td>15s</td><td>1</td></tr><tr><td>2</td><td>15s</td><td>10</td></tr><tr><td>3</td><td>15s</td><td>1</td></tr><tr><td>4</td><td>15s</td><td>1</td></tr></tbody>
     </table>
   </div>
+
+  <script>
+    const tooltip = document.getElementById('tooltip');
+    document.querySelectorAll('.point').forEach((point) => {
+      point.addEventListener('mouseenter', (event) => {
+        const target = event.target;
+        const time = target.getAttribute('data-time');
+        const vus = target.getAttribute('data-vus');
+        const stage = target.getAttribute('data-stage');
+        tooltip.innerHTML = 'Stage ' + stage + '<br/>Time: ' + time + 's<br/>Users: ' + vus;
+        tooltip.classList.add('visible');
+      });
+      point.addEventListener('mousemove', (event) => {
+        tooltip.style.left = event.pageX + 'px';
+        tooltip.style.top = event.pageY + 'px';
+      });
+      point.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+      });
+    });
+  </script>
 </body>
 </html>

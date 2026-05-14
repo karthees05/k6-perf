@@ -121,6 +121,29 @@ Peak profile:
 npm run peakTest
 ```
 
+## Virtual versus browser UI runs
+
+- `src/simulations/todoMvcSimulation.ts` is a browser-based UI journey and uses `k6/browser`.
+- It runs headless when configured with `headless: true`, but it still launches Chromium processes.
+- For no-browser execution, use the virtual script:
+
+```bash
+k6 run dist/simulations/todoMvcSimulationVirtual.js -e ENV=dev -e LOAD_PROFILE=fixed -e USERS=1 -e DURATION_SECONDS=10
+```
+
+Use the virtual simulation for higher-concurrency load tests and the browser simulation for real UI journey validation.
+
+## Hover details on the profile graph
+
+The generated `k6-profile-graph.html` now supports hover tooltips on each stage point.
+When you hover over a point, it shows:
+
+- Stage number
+- Time in seconds
+- Target user count
+
+The graph does not include request counts because it is generated from the load profile plan only. Request metrics are available in `k6-summary.html`.
+
 ## Example Commands
 
 Build only:

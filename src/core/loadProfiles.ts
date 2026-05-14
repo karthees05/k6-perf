@@ -194,6 +194,12 @@ export function buildProfileGraphHtml(plan: ProfilePlan): string {
     .map((point, index) => `${index === 0 ? "M" : "L"}${toX(point.time).toFixed(2)},${toY(point.vus).toFixed(2)}`)
     .join(" ");
 
+  const pointElements = points
+    .map((point, index) =>
+      `<circle class="point" cx="${toX(point.time).toFixed(2)}" cy="${toY(point.vus).toFixed(2)}" r="6" fill="#0284c7" stroke="#fff" stroke-width="2" data-time="${point.time}" data-vus="${point.vus}" data-stage="${index + 1}" />`
+    )
+    .join("");
+
   const rows = plan.stages
     .map(
       (stage, index) =>
@@ -217,6 +223,24 @@ export function buildProfileGraphHtml(plan: ProfilePlan): string {
     th { background: #f1f5f9; }
     .axis { stroke: #94a3b8; stroke-width: 1; }
     .line { fill: none; stroke: #0284c7; stroke-width: 3; }
+    .point { cursor: pointer; }
+    .tooltip {
+      position: absolute;
+      z-index: 10;
+      pointer-events: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.95);
+      color: white;
+      font-size: 13px;
+      line-height: 1.4;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.2);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      transform: translate(-50%, -120%);
+      white-space: nowrap;
+    }
+    .tooltip.visible { opacity: 1; }
   </style>
 </head>
 <body>
@@ -226,14 +250,16 @@ export function buildProfileGraphHtml(plan: ProfilePlan): string {
     <p>Total duration: ${plan.totalDurationSeconds}s | Start users: ${plan.startVUs} | Peak users: ${maxVUs}</p>
   </div>
 
-  <div class="card">
+  <div class="card" style="position: relative;">
     <svg viewBox="0 0 ${chartWidth} ${chartHeight}" width="100%" role="img" aria-label="Load profile graph">
       <line class="axis" x1="${left}" y1="${top}" x2="${left}" y2="${chartHeight - bottom}" />
       <line class="axis" x1="${left}" y1="${chartHeight - bottom}" x2="${chartWidth - right}" y2="${chartHeight - bottom}" />
       <path class="line" d="${path}" />
+      ${pointElements}
       <text x="${left}" y="${top - 8}" font-size="12" fill="#475569">Virtual users</text>
       <text x="${chartWidth - right - 70}" y="${chartHeight - 12}" font-size="12" fill="#475569">Time (seconds)</text>
     </svg>
+    <div class="tooltip" id="tooltip"></div>
   </div>
 
   <div class="card">
@@ -245,6 +271,27 @@ export function buildProfileGraphHtml(plan: ProfilePlan): string {
       <tbody>${rows}</tbody>
     </table>
   </div>
+
+  <script>
+    const tooltip = document.getElementById('tooltip');
+    document.querySelectorAll('.point').forEach((point) => {
+      point.addEventListener('mouseenter', (event) => {
+        const target = event.target;
+        const time = target.getAttribute('data-time');
+        const vus = target.getAttribute('data-vus');
+        const stage = target.getAttribute('data-stage');
+        tooltip.innerHTML = 'Stage ' + stage + '<br/>Time: ' + time + 's<br/>Users: ' + vus;
+        tooltip.classList.add('visible');
+      });
+      point.addEventListener('mousemove', (event) => {
+        tooltip.style.left = event.pageX + 'px';
+        tooltip.style.top = event.pageY + 'px';
+      });
+      point.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+      });
+    });
+  </script>
 </body>
 </html>`;
 }
