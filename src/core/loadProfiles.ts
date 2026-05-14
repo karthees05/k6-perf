@@ -119,7 +119,8 @@ export function buildOptionsFromPlan(
     ? {
         options: {
           browser: {
-            type: "chromium"
+            type: "chromium",
+            headless: true
           }
         }
       }
