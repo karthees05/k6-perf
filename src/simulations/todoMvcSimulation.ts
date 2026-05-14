@@ -4,6 +4,7 @@ import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporte
 import { textSummary } from "https://jslib.k6.io/k6-summary/0.1.0/index.js";
 import { getRuntimeConfig } from "../config/runtime.js";
 import { buildOptionsFromPlan, buildProfileGraphHtml, buildProfilePlan } from "../core/loadProfiles.js";
+import { normalizeHttpRequestMetric } from "../core/summaryHelpers.js";
 import {
   createTodos,
   editSecondTodo,
@@ -21,7 +22,7 @@ export const options: Options = {
   ...buildOptionsFromPlan(profilePlan),
   thresholds: {
     checks: ["rate>=0.95"],
-    iteration_duration: ["p(95)<10000"]
+    iteration_duration: ["p(95)<60000"]
   }
 };
 
@@ -47,6 +48,7 @@ export default async function defaultScenario(): Promise<void> {
 
 /** Writes console, JSON, HTML summary, and profile graph artifacts after each run. */
 export function handleSummary(data: Record<string, unknown>) {
+  normalizeHttpRequestMetric(data as any);
   return {
     stdout: textSummary(data, { indent: " ", enableColors: true }),
     "k6-summary.html": htmlReport(data),

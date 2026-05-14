@@ -18,16 +18,16 @@
 </head>
 <body>
   <div class="card">
-    <h1>k6 Profile Graph: ramp-up</h1>
-    <p>Ramp-up: 2 virtual users run for 10 seconds, ramp up to 4 for 10 seconds, then maintain 4 for 10 seconds, each executing all requests sequentially.</p>
-    <p>Total duration: 30s | Start users: 2 | Peak users: 4</p>
+    <h1>k6 Profile Graph: fixed</h1>
+    <p>Fixed: 1 virtual users run for 10 seconds, each executing all requests sequentially.</p>
+    <p>Total duration: 10s | Start users: 1 | Peak users: 1</p>
   </div>
 
   <div class="card">
     <svg viewBox="0 0 980 420" width="100%" role="img" aria-label="Load profile graph">
       <line class="axis" x1="70" y1="30" x2="70" y2="370" />
       <line class="axis" x1="70" y1="370" x2="950" y2="370" />
-      <path class="line" d="M70.00,200.00 L363.33,200.00 L656.67,30.00 L950.00,30.00" />
+      <path class="line" d="M70.00,30.00 L950.00,30.00" />
       <text x="70" y="22" font-size="12" fill="#475569">Virtual users</text>
       <text x="880" y="408" font-size="12" fill="#475569">Time (seconds)</text>
     </svg>
@@ -39,7 +39,7 @@
       <thead>
         <tr><th>Stage</th><th>Duration</th><th>Target users</th></tr>
       </thead>
-      <tbody><tr><td>1</td><td>10s</td><td>2</td></tr><tr><td>2</td><td>10s</td><td>4</td></tr><tr><td>3</td><td>10s</td><td>4</td></tr></tbody>
+      <tbody><tr><td>1</td><td>10s</td><td>1</td></tr></tbody>
     </table>
   </div>
 </body>

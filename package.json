@@ -8,7 +8,8 @@
     "smokeTest": "npm run build && k6 run dist/simulations/todoMvcSimulation.js -e ENV=dev -e LOAD_PROFILE=fixed -e USERS=1 -e DURATION_SECONDS=30",
     "rampTest": "npm run build && k6 run dist/simulations/todoMvcSimulation.js -e ENV=qa -e LOAD_PROFILE=ramp-up -e USERS=20 -e DURATION_SECONDS=180",
     "spikeTest": "npm run build && k6 run dist/simulations/todoMvcSimulation.js -e ENV=prod -e LOAD_PROFILE=spike -e USERS=40 -e DURATION_SECONDS=120",
-    "peakTest": "npm run build && k6 run dist/simulations/todoMvcSimulation.js -e ENV=prod -e LOAD_PROFILE=peak -e USERS=30 -e DURATION_SECONDS=240"
+    "peakTest": "npm run build && k6 run dist/simulations/todoMvcSimulation.js -e ENV=prod -e LOAD_PROFILE=peak -e USERS=30 -e DURATION_SECONDS=240",
+    "virtualTest": "npm run build && k6 run dist/simulations/todoMvcSimulationVirtual.js -e ENV=dev -e LOAD_PROFILE=fixed -e USERS=5 -e DURATION_SECONDS=30"
   },
   "devDependencies": {
     "@types/k6": "^0.57.0",

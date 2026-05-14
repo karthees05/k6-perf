@@ -110,14 +110,20 @@ export function buildProfilePlan(config: RuntimeConfig): ProfilePlan {
 }
 
 /** Converts a profile plan into k6 `options.scenarios` configuration. */
-export function buildOptionsFromPlan(plan: ProfilePlan): Options {
-  const browserOptions = {
-    options: {
-      browser: {
-        type: "chromium"
+export function buildOptionsFromPlan(
+  plan: ProfilePlan,
+  execName = "runTodoMvcJourney",
+  enableBrowser = true
+): Options {
+  const browserOptions = enableBrowser
+    ? {
+        options: {
+          browser: {
+            type: "chromium"
+          }
+        }
       }
-    }
-  };
+    : {};
 
   if (plan.profile === "fixed") {
     return {
@@ -126,7 +132,7 @@ export function buildOptionsFromPlan(plan: ProfilePlan): Options {
           executor: "constant-vus",
           vus: plan.startVUs,
           duration: toDuration(plan.totalDurationSeconds),
-          exec: "runTodoMvcJourney",
+          exec: execName,
           ...browserOptions
         }
       }
@@ -139,7 +145,7 @@ export function buildOptionsFromPlan(plan: ProfilePlan): Options {
         executor: "ramping-vus",
         startVUs: plan.startVUs,
         stages: plan.stages.map((stage) => ({ duration: toDuration(stage.durationSeconds), target: stage.target })),
-        exec: "runTodoMvcJourney",
+        exec: execName,
         ...browserOptions
       }
     }
